@@ -8,7 +8,22 @@ const { send } = require("process");
 const app = express();
 const PORT = 3001;
 
+const saveNote = (note) =>
+  fetch('/api/notes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(note),
+  });
+
+ 
+
 app.use (express.static("public"))
+
+//app.post("/api/notes", (req,res)) {
+
+//}
 
 app.get("/notes", (req, res) =>
   res.sendFile(path.join(__dirname, "./public/notes.html"))
@@ -39,6 +54,12 @@ app.get("/api/notes", (req, res) => {
     }
   );
 });
+
+
+
+
+
+
 app.listen(PORT);
 
 //The following HTML routes should be created: `GET /api/notes` should read the `db.json` file and return all saved notes as JSON.
