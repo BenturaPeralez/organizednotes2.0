@@ -2,23 +2,16 @@ const fs = require("fs");
 
 const express = require("express");
 const path = require("path");
-const { response } = require("express");
-const { send } = require("process");
 
 const app = express();
 const PORT = 3001;
 
-const saveNote = (note) =>  fetch('/api/notes', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(note),
-});
 
-app.use (express.static("public"));
 
-app.post("/api/notes", (req,res) => {
+app.use(express.static("public"));
+app.use(express.json());
+
+app.post("/api/notes", (req, res) => {
   fs.readFile(
     path.join(__dirname, "./db/db.json"),
     "utf8",
@@ -27,7 +20,20 @@ app.post("/api/notes", (req,res) => {
         console.log("File read failed:", err);
         res.send("you cannot read the file");
       }
-      res.json(JSON.parse(jsonString));
+     const notesParsed = JSON.parse(jsonString)
+     //before thhis step an id is to be added
+      notesParsed.push(req.body)
+      fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(notesParsed), (err)=> {
+        if (err) {
+          console.log(err);
+          res.json("error! note not added");
+        }
+        else {
+          res.json("note is sucessfully added");
+        }
+
+      })
+    
     }
   );
 });
@@ -59,13 +65,9 @@ app.get("/api/notes", (req, res) => {
       }
       res.json(JSON.parse(jsonString));
     }
+
   );
 });
-
-
-
-
-
 
 app.listen(PORT);
 
